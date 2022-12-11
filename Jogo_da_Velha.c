@@ -1,95 +1,167 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
-#include <time.h>
-//projeto_jogoDaVelha.c
-void loadScreen () {
-    system("cls");
-        printf("CarregandoJogo\n");
-        printf("o------");
-        Sleep(125);
+#include <stdbool.h>
 
-        system("cls");
-        printf("CarregandoJogo\n");
-        printf("-o-----");
-        Sleep(125);
+#ifdef _WIN32
+    #include <Windows.h>
+#else
+    #include <unistd.h>
+#endif
 
-        system("cls");
-        printf("CarregandoJogo\n");
-        printf("--o----");
-        Sleep(125);
+int tam = 3;
+char tabuleiro[3][3];
 
-        system("cls");
-        printf("CarregandoJogo\n");
-        printf("---o---");
-        Sleep(125);
 
-        system("cls");
-        printf("CarregandoJogo\n");
-        printf("----o--");
-        Sleep(125);
-        
-        system("cls");
-        printf("CarregandoJogo\n");
-        printf("-----o-");
-        Sleep(125);
-        
-        system("cls");
-        printf("CarregandoJogo\n");
-        printf("------o");
-        Sleep(125);
+void printGame (int tam, char tabuleiro[][tam])
+ {
+    system("clear || cls");
+    printf("...............\n");
+    printf("   1   2   3   \n");
+    printf("1  %c | %c | %c\n", tabuleiro[0][0], tabuleiro[0][1], tabuleiro[0][2]);
+    printf("  ...|...|...  \n");
+    printf("2  %c | %c | %c\n", tabuleiro[1][0], tabuleiro[1][1], tabuleiro[1][2]);
+    printf("  ...|...|...  \n");
+    printf("3  %c | %c | %c\n", tabuleiro[2][0], tabuleiro[2][1], tabuleiro[2][2]);
+    printf("...............\n");
 }
 
-void setingGameMatriz (int size, char game[][size]) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            game[i][j] = ' ';
+void read_nickname(char nickname[], int i) 
+{
+    char c = getchar();
+    if(c == '\n') nickname[i] = '\0';
+    else 
+    {
+        nickname[i] = c;
+        read_nickname(nickname, i + 1);
+    }   
+}
+
+void inserNicknameVsPlayer( char nickOne[], char nickTwo[])
+{
+   
+    system("clear || cls");
+    printf("Digite o nome do primeiro jogador: ");
+    getchar();
+    read_nickname(nickOne,0);
+
+    system("clear || cls");
+    printf("Digite o nome do segundo jogador jogador: ");
+    read_nickname(nickTwo,0);
+}
+
+int CheckWinner (int tam, char tabuleiro[][tam], int *playerOne, int *playerTwo)
+{
+    char winner;
+
+    for (int i = 0; i < tam; i++) 
+    {
+        if (tabuleiro[i][0] == tabuleiro[i][1] && tabuleiro[i][0] == tabuleiro[i][2]) 
+        {
+            if (tabuleiro[i][0] != ' ') winner = tabuleiro[i][0];
         }
+    }
+
+    for (int i = 0; i < tam; i++) 
+    { 
+        if (tabuleiro[0][i] == tabuleiro[1][i] && tabuleiro[0][i] == tabuleiro[2][i])
+        {
+            if (tabuleiro[0][i] != ' ') winner = tabuleiro[0][i];
+        }
+    }
+
+    if (tabuleiro [0][0] == tabuleiro[1][1] && tabuleiro[0][0] == tabuleiro[2][2]) 
+    {
+        if(tabuleiro[1][1] != ' ') 
+        {
+        winner = tabuleiro[1][1];
+        }
+    }
+    if (tabuleiro [0][2] == tabuleiro[1][1] && tabuleiro[0][2] == tabuleiro[2][0]) 
+    {
+        if(tabuleiro[1][1] != ' ') 
+        {
+        winner = tabuleiro[1][1];
+        }
+    }
+    if (winner == 'X')
+    {
+        *playerOne += 1;
+        return 1;
+    }
+    else if (winner == 'O')
+    {
+        *playerTwo += 1;
+        return 2;
+    }
+    else
+    {
+        return 0;
     }
 }
 
-void enteringGameMode (int *player) {
-    printf("Modos de jogo:\n");
-    printf("    1. Jogador x Jogador\n    0. Jogador x Maquina\n\n");
-    printf("Digite o modo de jogo: ");
-    scanf("%d", player);
+bool draw(char tab[3][3])
+{
+    for(int i=0; i < 9; i++)
+    {
+        if(tab[i / 3][i % 3] == ' ') return false;
+    }
+    return true;
 }
 
-void enteringNicks (char nickPlayer[], int player) {
-    printf("\nDigite o nick do jogador %d:", player);
-    scanf("%s", nickPlayer);
+bool valid_move (int tam, char tabuleiro[][tam], int line, int column) {
+
+    if (tabuleiro[line][column] != ' ') {
+
+        printf("\nEscolha uma outra posicao");
+        return true;
+    } 
+    return false;
 }
 
-void printGame (int size, char game[][size]) {
-    printf("...............\n");
-    printf("   1   2   3   \n");
-    printf("1  %c | %c | %c\n", game[0][0], game[0][1], game[0][2]);
-    printf("  ...|...|...  \n");
-    printf("2  %c | %c | %c\n", game[1][0], game[1][1], game[1][2]);
-    printf("  ...|...|...  \n");
-    printf("3  %c | %c | %c\n", game[2][0], game[2][1], game[2][2]);
-    printf("...............\n");
-}
-
-void printTurn (char nick[]) {
-    printf("\nEh a vez de %s\n", nick);
-}
-
-int validPosition (int size, char game[][size], int line, int column) {
-    if (line < 0 || column < 0) {
-        system("cls");
+bool validPosition (int size, char game[][size], int line, int column) {
+    if (line < 0 || column < 0) 
+    {
         printGame(size, game);
         printf("\nEsta posicao eh invalida");
         printf("\nEscolha uma nova posicao");
-        return 1;
-    } else if (game[line][column] != ' ') {
-        system("cls");
-        printGame(size, game);
+        return true;
+    } 
+    else if (game[line][column] != ' ') 
+    {   
+        printGame(3, tabuleiro);
         printf("\nEsta posicao ja foi marcada");
         printf("\nEscolha uma nova posicao");
-        return 1;
+        return true;
     } 
-    return 0;
+    return false;
+}
+
+void add_0_tabble (int i, int linha, int coluna, char matrix[][coluna])
+{
+	if (i < linha * coluna)
+	{
+		matrix[i / coluna][i % coluna] =  ' ';
+		add_0_tabble(i + 1, linha, coluna, matrix);
+	}
+	return;
+}
+
+void symbol (int tam, char matrix[][tam], char symbol, int line, int column) 
+{
+    matrix[line][column] = symbol;
+}
+
+
+void Score(int playerOne, int PLayerTwo, char nicknameOne[], char nicknameTwo[])
+{
+    
+
+    printf("Placar final:\n\n");
+
+    printf("%s: %d\n", nicknameOne, playerOne);
+    printf("%s: %d\n\n",nicknameTwo, PLayerTwo);
+
+    printf("%s venceu o duelo!\n\n", (playerOne > PLayerTwo) ? nicknameOne : nicknameTwo);
 }
 
 void selectPositionToPlay (int size, char game[][size], int *line, int *column, char symbol) {
@@ -106,304 +178,127 @@ void selectPositionToPlay (int size, char game[][size], int *line, int *column, 
     } while (validPosition(size, game, *line - 1, *column - 1));
 }
 
-void putSymbol (int size, char game[][size], char symbol, int line, int column) {
-    game[line][column] = symbol;
-}
+void VersusPlayer(int *JogadorX, int *jogadorBola, int tam, char tabuleiro[][tam])
+{   
+    int playerOne = 0, playerTwo = 0;
+    add_0_tabble(0, tam, tam, tabuleiro);
 
-int sum (char nick[], int i, int s) {
-    if (i > -1) return sum(nick, i - 1, s + nick[i]);
-}
+    for(int i = 0; ; i++)
+        {            
+            int line1, column1, line2, column2;
 
-void cpuTurn (int size, char game[][size], int turn) {
-    int verify = 0;
-    do {
-        for (int i = 0; i < size; i++) { // horizonal
-            if (game[i][0] == 'O' && game[i][1] == 'O' && game[i][2] == ' ') {
-                game[i][2] = 'O';
-                verify = 1;
-            } else if (game[i][0] == 'O' && game[i][1] == ' ' && game[i][2] == 'O') {
-                game[i][1] = 'O';
-                verify = 1;
-            } else if (game[i][0] == ' ' && game[i][1] == 'O' && game[i][2] == 'O') {
-                game[i][0] = 'O';
-                verify = 1;
-            }
-            if (verify) break;
+          
+            printGame(3, tabuleiro);
+
+            selectPositionToPlay(tam, tabuleiro, &line1, &column1, 'X');
+            symbol(3,tabuleiro,'X',line1-1, column1-1);
+            printGame(3, tabuleiro);
+
+            if(CheckWinner(3,tabuleiro, &playerOne, &playerTwo) == 1) break;
+            if(draw(tabuleiro)) break;
+            
+
+            selectPositionToPlay(tam, tabuleiro, &line2, &column2, 'O');
+            symbol(3,tabuleiro,'O',line2-1, column2-1);
+            printGame(3, tabuleiro);
+
+            if(CheckWinner(3,tabuleiro, &playerOne, &playerTwo) == 2) break;
+            if(draw(tabuleiro)) break;
+            
         }
-    
-        if (verify) break;
-
-        for (int i = 0; i < size; i++) { // vertical
-            if (game[0][i] == 'O' && game[1][i] == 'O' && game[2][i] == ' ') {
-                game[2][i] = 'O';
-                verify = 1;
-            } else if (game[0][i] == 'O' && game[1][i] == ' ' && game[2][i] == 'O') {
-                game[1][i] = 'O';
-                verify = 1;
-            } else if (game[0][i] == ' ' && game[1][i] == 'O' && game[2][i] == 'O') {
-                game[0][i] = 'O';
-                verify = 1;
-            }
-            if (verify) break;
-        }
-    
-        if (verify) break;
-
-        // diagonal
-        if (game[0][0] == 'O' && game[1][1] == 'O' && game[2][2] == ' ') {
-            game[2][2] = 'O';
-            verify = 1;
-        } else if (game[0][0] == 'O' && game[1][1] == ' ' && game[2][2] == 'O') {
-            game[1][1] = 'O';
-            verify = 1;
-        } else if (game[0][0] == ' ' && game[1][1] == 'O' && game[2][2] == 'O') {
-            game[0][0] = 'O';
-            verify = 1;
-        }
-    
-        if (verify) break;
-
-        if (game[0][2] == 'O' && game[1][1] == 'O' && game[2][0] == ' ') {
-            game[2][0] = 'O';
-            verify = 1;
-        } else if (game[0][2] == 'O' && game[1][1] == ' ' && game[2][0] == 'O') {
-            game[1][1] = 'O';
-            verify = 1;
-        } else if (game[0][2] == ' ' && game[1][1] == 'O' && game[2][0] == 'O') {
-            game[0][2] = 'O';
-            verify = 1;
-        }
-    
-        if (verify) break;
-        /////////////////////////////// negar vitoria vvvvvvvv
-        for (int i = 0; i < size; i++) { // horizonal
-            if (game[i][0] == 'X' && game[i][1] == 'X' && game[i][2] == ' ') {
-                game[i][2] = 'O';
-                verify = 1;
-            } else if (game[i][0] == 'X' && game[i][1] == ' ' && game[i][2] == 'X') {
-                game[i][1] = 'O';
-                verify = 1;
-            } else if (game[i][0] == ' ' && game[i][1] == 'X' && game[i][2] == 'X') {
-                game[i][0] = 'O';
-                verify = 1;
-            }
-            if (verify) break;
-        }
-    
-        if (verify) break;
-
-        for (int i = 0; i < size; i++) { // vertical
-            if (game[0][i] == 'X' && game[1][i] == 'X' && game[2][i] == ' ') {
-                game[2][i] = 'O';
-                verify = 1;
-            } else if (game[0][i] == 'X' && game[1][i] == ' ' && game[2][i] == 'X') {
-                game[1][i] = 'O';
-                verify = 1;
-            } else if (game[0][i] == ' ' && game[1][i] == 'X' && game[2][i] == 'X') {
-                game[0][i] = 'O';
-                verify = 1;
-            }
-            if (verify) break;
-        }
-    
-        if (verify) break;
-
-        // diagonal
-        if (game[0][0] == 'X' && game[1][1] == 'X' && game[2][2] == ' ') {
-            game[2][2] = 'O';
-            verify = 1;
-        } else if (game[0][0] == 'X' && game[1][1] == ' ' && game[2][2] == 'X') {
-            game[1][1] = 'O';
-            verify = 1;
-        } else if (game[0][0] == ' ' && game[1][1] == 'X' && game[2][2] == 'X') {
-            game[0][0] = 'O';
-            verify = 1;
-        }
-    
-        if (verify) break;
-
-        if (game[0][2] == 'X' && game[1][1] == 'X' && game[2][0] == ' ') {
-            game[2][0] = 'O';
-            verify = 1;
-        } else if (game[0][2] == 'X' && game[1][1] == ' ' && game[2][0] == 'X') {
-            game[1][1] = 'O';
-            verify = 1;
-        } else if (game[0][2] == ' ' && game[1][1] == 'X' && game[2][0] == 'X') {
-            game[0][2] = 'O';
-            verify = 1;
-        }
-    
-        if (verify) break;
-        /////////////////////////////// negar vitoria ^^^^^^^^
-
-        int arrayI[9], arrayJ[9], i, j;
-        srand(time(NULL));
-        for (i = 0; i < 10; i++) {
-            arrayI[i] = rand() % 3;
-        } 
-        for (j = 0; j < 10; j++) {
-            arrayJ[j] = rand() % 3;
-        }
-
-        i = arrayI[turn], j = arrayJ[turn];
-
-        if (game[i][j] == ' ') {
-            game[i][j] = 'O';
-            verify = 1;
-        }
-        else if (game[j][i] == ' ') {
-            game[j][i] = 'O';
-            verify = 1;
-        }
-        else {
-            for (i = 0; i < size; i++) {
-                for (j = 0; j < size; j++) {
-                    if (game[i][j] == ' ' || game[j][i] == ' ') {
-                        if (game[i][j] == ' ') {
-                            game[i][j] = 'O';
-                            verify = 1;
-                        } else if (game[j][i] == 'O'){
-                            game[j][i] = 'O';
-                            verify = 1;
-                        } 
-                        if (verify) break;
-                    }   
-                }
-                if (verify) break;
-            }
-        }
-    } while (!verify);
-}
-
-
-int chekWinnerInRound (int size, char game[][size]) {
-    char winner;
-
-    for (int i = 0; i < size; i++) { // vitoria horizontal
-        if (game[i][0] == game[i][1] && game[i][0] == game[i][2]) {
-            if (game[i][0] != ' ') winner = game[i][0];
-        }
-    }
-
-    for (int i = 0; i < size; i++) { // vitoria vertical
-        if (game[0][i] == game[1][i] && game[0][i] == game[2][i]) {
-            if (game[0][i] != ' ') winner = game[0][i];
-        }
-    }
-        // vitoria diagonal
-    if (game [0][0] == game[1][1] && game[0][0] == game[2][2]) {
-        if(game[1][1] != ' ') winner = game[1][1];
-    }
-    if (game [0][2] == game[1][1] && game[0][2] == game[2][0]) {
-        if(game[1][1] != ' ') winner = game[1][1];
-    }
-    
-    if (winner == 'X') return 1;
-    else if (winner == 'O') return 2;
-    else return 0;
-}
-
-void printWinner (char nickPlayer1[], char nickPlayer2[], int winner) {
-    if (winner == 1) printf("\nO Vencedor foi: %s\n", nickPlayer1);
-    if (winner == 2) printf("\nO Vencedor foi: %s\n", nickPlayer2);
-}
-
-void restartGame (int *restart) {
-    printf("\nVoce deseja jogar novamente?\n");
-    printf("    1. Sim\n    0. Nao\n\n");
-    printf("Digite sua escolha: ");
-    scanf("%d", restart);
-    getchar();
-    system("cls");
-}
-
-void switchGameMode (int *switchGameMode) {
-    printf("\nDeseja alterar o modo de jogo?\n");
-    printf("    1. Sim\n    0. Nao\n\n");
-    printf("Digite sua escolha: ");
-    scanf("%d", switchGameMode);
-    system("cls");
-}
-
-void scoreboard (int count1, int count2, int countCPU, char nickPlayer1[], char nickPlayer2[], int player2) {
-    printf("\nO placar do jogo foi:\n");
-    printf("    %s: %d\n", nickPlayer1, count1);
-    if (player2) printf("    %s: %d\n", nickPlayer2, count2);   
-    printf("    %s: %d\n", "CPU", countCPU);
-    printf("\nObrigado por jogar!\n");
-    getchar();
-}
-
-int main () {
-    int size = 3, player2, restart, switchMode = 1;
-    int winCount1 = 0, winCount2 = 0, countCPU = 0, roundCount = 1, winner = 0, line, column;
-    char game[size][size];
-    char nickPlayer1[21], nickPlayer2[21] = "CPU";
-
-    do {
-        setingGameMatriz(size, game);
-
-        if (switchMode) {
-            enteringGameMode(&player2);
-
-            enteringNicks(nickPlayer1, 1);
-            if (player2) enteringNicks(nickPlayer2, 2);
-        }
-
-        roundCount = 1;
-        winner = 0;
         
-        loadScreen();
 
-        do {
-            system("cls");
-            if (roundCount % 2) {
-                printTurn(nickPlayer1);
-                printGame(size, game);
-                selectPositionToPlay(size, game, &line, &column, 'X');
-                putSymbol(size, game, 'X', line - 1, column - 1);
-            } else {
-                printTurn(nickPlayer2);
-                printGame(size, game);
-                if (player2) {
-                    selectPositionToPlay(size, game, &line, &column, 'O'); 
-                    putSymbol(size, game, 'O', line - 1, column - 1);
-                } else {
-                    cpuTurn(size, game, roundCount);
-                    printf("A CPU esta jogando...");
-                    Sleep(2000);
-                }
-            }
+    *JogadorX = *JogadorX + playerOne;
+    *jogadorBola = *jogadorBola + playerTwo;
 
-            if (roundCount > 4) {
-                winner = chekWinnerInRound(size, game);
-            }
-            if (winner) {
-                system("cls");
-                printGame(size, game);
-                printWinner(nickPlayer1, nickPlayer2, winner);
-                if (winner == 1) winCount1++;
-                else {
-                    if (player2) winCount2++;
-                    else countCPU++;
-                }
-                break;
-            }
 
-            if (!winner) {
-                system("cls");
-                printGame(size, game);
-                printf("Esta rodada terminou em empate");
-            }
+}
 
-            roundCount += 1;
-        } while (roundCount < 10);
+void ReplayGamePlayer( int *op, int *scoreOne, int *scoreTwo)
+{
+    do
+    {   
 
-        restartGame(&restart);
-        if (restart) switchGameMode(&switchMode);
-    } while (restart);
 
-    scoreboard(winCount1, winCount2, countCPU, nickPlayer1, nickPlayer2, player2);
+        int playerOne = 0, playerTwo = 0;
+        VersusPlayer(&playerOne, &playerTwo, tam, tabuleiro);
+
+        *scoreOne += playerOne;
+        *scoreTwo += playerTwo;
+
+        printGame(3, tabuleiro);
+        printf("Você pretende continuar?\n");
+        printf("(1) - Sim\n(2) - N%co\n", 198);
+        
+        printf("Digite um n%cmero: ", 163);        
+        scanf("%d", op);
+        
+        if(*op != 1 && *op != 2)
+        {
+            printf("Op%c%co inválida!\n", 135, 198);
+        } 
+    } while (*op != 2 );
     
+}
+
+void inicial_menu()
+{
+    while(1)
+    {
+        system("clear || cls");
+        printf("\tJOGO DA VELHA!\t\n");
+        printf("Op%c%ces:\n", 135,228);
+
+        printf("(1) - Jogador contra CPU\n");
+        printf("(2) - Jogador contra Jogador\n");
+        printf("(3) - Regras do jogo\n");
+        printf("(4) - Sair do jogo\n");
+
+        printf("Digite um n%cmero: ", 163);
+        int opc;
+        scanf("%d", &opc);
+
+        if(opc == 1)
+        {
+            system("clear || cls");
+
+        }
+
+        else if(opc == 2)
+        {
+            system("clear || cls");
+            int playerOne = 0, playerTwo = 0;
+            int op;
+            char nicknameOne[50], nicknameTwo[50];
+            inserNicknameVsPlayer(nicknameOne, nicknameTwo);
+
+            do{
+                ReplayGamePlayer(&op, &playerOne, &playerTwo);
+            }while(op != 2); 
+            
+            Sleep(125);
+            printGame(3, tabuleiro);
+            Score(playerOne, playerTwo, nicknameOne, nicknameTwo);
+            system("pause");
+        }
+        else if(opc == 3)
+        {
+        
+        }
+        else if(opc == 4)
+        {
+            exit(0);
+        }
+        else
+        {
+            system("clear || cls");
+        }
+    }
+}
+
+int main()
+{
+ 
+    inicial_menu();
     return 0;
 }
