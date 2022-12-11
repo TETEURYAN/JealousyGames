@@ -122,15 +122,15 @@ bool validPosition (int size, char game[][size], int line, int column) {
     if (line < 0 || column < 0) 
     {
         printGame(size, game);
-        printf("\nEsta posicao eh invalida");
-        printf("\nEscolha uma nova posicao");
+        printf("\nEsta posi%c%co %c inv%clida",135, 198,130, 160);
+        printf("\nEscolha uma nova posi%c%co", 135, 198);
         return true;
     } 
     else if (game[line][column] != ' ') 
     {   
         printGame(3, tabuleiro);
-        printf("\nEsta posicao ja foi marcada");
-        printf("\nEscolha uma nova posicao");
+        printf("\nEsta posi%c%co j%c foi marcada", 135, 198, 160);
+        printf("\nEscolha uma nova posi%c%c", 135, 198);
         return true;
     } 
     return false;
@@ -227,7 +227,7 @@ void ReplayGamePlayer( int *op, int *scoreOne, int *scoreTwo)
         *scoreTwo += playerTwo;
 
         printGame(3, tabuleiro);
-        printf("Você pretende continuar?\n");
+        printf("Voc%c pretende continuar?\n", 136);
         printf("(1) - Sim\n(2) - N%co\n", 198);
         
         printf("Digite um n%cmero: ", 163);        
