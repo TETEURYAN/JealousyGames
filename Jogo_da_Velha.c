@@ -11,7 +11,6 @@
 int tam = 3;
 char tabuleiro[3][3];
 
-
 void printGame (int tam, char tabuleiro[][tam])
  {
     system("clear || cls");
