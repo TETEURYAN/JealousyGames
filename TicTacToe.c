@@ -80,7 +80,7 @@ void rules()
     printf("Descri%c%co de cada op%c%o do jogo:\n\n",135, 198, 135, 198);
 
     printf("(1) - Jogador contra CPU\n");
-    printf("Esta op%c%co lhe d%c o direito de jogar contra a IA da CPU, onde voc%e joga com X e a CPU com O\n", 135, 198, 160, 136);
+    printf("Esta op%c%co lhe d%c o direito de jogar contra a IA da CPU, onde voc%c joga com X e a CPU com O\n", 135, 198, 160, 136);
     printf("Obs: A IA da CPU joga usando o Algoritmo Minimax, portanto, ser%c um pouco complicado vencer rs.\n\n",160);
 
     printf("(2) - Jogador contra Jogador\n");
