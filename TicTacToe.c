@@ -29,37 +29,37 @@ void loadScreen ()
 {
     for(int i = 0; i < 2; i++)
     {
-        system("cls");
+        system("clear || cls");
         printf("CarregandoJogo\n");
         printf("o------");
         SleepSO(125);
 
-        system("cls");
+        system("clear || cls");;
         printf("CarregandoJogo\n");
         printf("-o-----");
         SleepSO(125);
 
-        system("cls");
+        system("clear || cls");
         printf("CarregandoJogo\n");
         printf("--o----");
         SleepSO(125);
 
-        system("cls");
+        system("clear || cls");
         printf("CarregandoJogo\n");
         printf("---o---");
         SleepSO(125);
 
-        system("cls");
+        system("clear || cls");
         printf("CarregandoJogo\n");
         printf("----o--");
         SleepSO(125);
         
-        system("cls");
+        system("clear || cls");
         printf("CarregandoJogo\n");
         printf("-----o-");
         SleepSO(125);
         
-        system("cls");
+        system("clear || cls");
         printf("CarregandoJogo\n");
         printf("------o");
         SleepSO(125);
@@ -279,6 +279,14 @@ void addSpaceInTabble (int i, int linha, int coluna, char matrix[][coluna])
 	return;
 }
 
+void addSpaceInCPUTablle(char *tabble)
+{
+    for(int i = 0; i < 9; i++)
+    {
+        tabble[i] = ' ';
+    }
+}
+
 void symbol (int tam, char matrix[][tam], char symbol, int line, int column) 
 {
     matrix[line][column] = symbol;
@@ -483,6 +491,8 @@ void VersusCPU(int *JogadorX, int *jogadorBola, int tam, char tabuleiro[][tam], 
 {   
     int playerOne = 0, playerTwo = 0;
     addSpaceInTabble(0, tam, tam, tabuleiro);
+    addSpaceInCPUTablle(tabbleCPU);
+    
 
     for(int i = 0; ; i++)
         {            
